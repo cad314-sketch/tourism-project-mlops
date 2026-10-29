@@ -23,9 +23,9 @@ if model is None:
     st.error(f"Modèle introuvable à l'emplacement : {model_path}. Veuillez d'abord exécuter l'entraînement du modèle.")
 else:
     st.subheader("Informations du client")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         age = st.number_input("Âge", min_value=18, max_value=100, value=30)
         city_tier = st.selectbox("Catégorie de Ville (CityTier)", [1, 2, 3])
@@ -43,7 +43,7 @@ else:
         passport = st.selectbox("Détient un Passeport ?", ["Non", "Oui"])
         own_car = st.selectbox("Possède une Voiture ?", ["Non", "Oui"])
         num_children = st.number_input("Nombre d'enfants de moins de 5 ans", min_value=0, max_value=5, value=0)
-        
+
     st.subheader("Données d'interaction client")
     col3, col4 = st.columns(2)
     with col3:
@@ -80,7 +80,7 @@ else:
     if st.button("Prédire l'Achat"):
         prediction = model.predict(input_df)[0]
         probability = model.predict_proba(input_df)[0][1]
-        
+
         st.write("---")
         if prediction == 1:
             st.success(f"🎯 **Le client est susceptible d'acheter le forfait !** (Probabilité : {probability:.2%})")
