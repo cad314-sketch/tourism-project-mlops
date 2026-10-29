@@ -39,7 +39,7 @@ def train_model():
 
     print("Starting Hyperparameter tuning...")
     grid_search = GridSearchCV(pipeline, param_grid, cv=3, scoring="accuracy", n_jobs=-1)
-    
+
     # Start MLflow run
     mlflow.set_experiment("Tourism_Prediction")
     with mlflow.start_run():
