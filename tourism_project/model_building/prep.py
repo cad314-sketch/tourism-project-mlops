@@ -36,5 +36,3 @@ def prepare_data():
 
     print("Data preparation completed and splits saved successfully.")
 
-if __name__ == "__main__":
-    prepare_data()
