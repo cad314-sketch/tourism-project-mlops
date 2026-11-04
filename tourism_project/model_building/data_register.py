@@ -1,24 +1,31 @@
-import os
 import pandas as pd
+import os
+# Import necessary libraries from huggingface_hub
+from huggingface_hub.utils import RepositoryNotFoundError
+from huggingface_hub import HfApi, create_repo
+import os
 
-def register_data():
-    data_path = "tourism_project/data/tourism.csv"
-    if not os.path.exists(data_path):
-        raise FileNotFoundError(f"Fichier introuvable à l'emplacement : {data_path}")
+# Define repository details
+REPO   = f"{"cad314-sketch"}/{REPO_NAME}"
+repo_id = "cool/tourism_project_dataset"
+repo_type = "dataset"
 
-    df = pd.read_csv(data_path)
-    expected_columns = ["ProdTaken", "Age", "TypeofContact", "CityTier", "DurationOfPitch", "Occupation"]
+# Initialize API client using the Hugging Face token from environment variables
+api = HfApi(token=os.getenv("HF_TKN"))
 
-    print("--- Validation du jeu de données ---")
-    print(f"Nombre total de lignes : {len(df)}")
-    print(f"Nombre total de colonnes : {len(df.columns)}")
+# Step 1: Check if the space exists
+try:
+    api.repo_info(repo_id=repo_id, repo_type=repo_type)
+    print(f"Space '{repo_id}' already exists. Using it.")
+except RepositoryNotFoundError:
+    print(f"Space '{repo_id}' not found. Creating new space...")
+    create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
+    print(f"Space '{repo_id}' created.")
 
-    # Vérification des colonnes clés indispensables
-    missing_cols = [col for col in expected_columns if col not in df.columns]
-    if missing_cols:
-        raise ValueError(f"Colonnes obligatoires manquantes : {missing_cols}")
-
-    print("✓ Validation réussie : Toutes les colonnes indispensables sont présentes.")
-
-if __name__ == "__main__":
-    register_data()
+# Step 2: Upload the data folder to the repo
+# Corrected path to point to 'data' folder relative to the repo root
+api.upload_folder(
+    folder_path="data",
+    repo_id=repo_id,
+    repo_type=repo_type,
+)
