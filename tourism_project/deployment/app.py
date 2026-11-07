@@ -83,6 +83,7 @@ else:
 
         st.write("---")
         if prediction == 1:
-            st.success(f"🎯 **Le client est susceptible d'acheter le forfait !** (Probabilité : {probability:.2%})")
+            st.success(f"🎯 **The customer is likely to purchase the package!** (Probability : {probability:.2%})")
         else:
-            st.warning(f"❌ **Le client est peu susceptible d'acheter le forfait.** (Probabilité d'achat : {probability:.2%})")
+            st.warning(f"❌ **
+The customer is unlikely to purchase the package.** (Probability of purchase) : {probability:.2%})")
