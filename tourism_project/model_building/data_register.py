@@ -11,7 +11,7 @@ repo_id = "cool/tourism_project_dataset"
 repo_type = "dataset"
 
 # Initialize API client using the Hugging Face token from environment variables
-api = HfApi(token=os.getenv("HF_TKN"))
+api = HfApi(token=os.getenv("HG_TOKEN"))
 
 # Step 1: Check if the space exists
 try:
