@@ -11,35 +11,43 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score
 
 def train_model():
+    # Configuration de MLflow avec repli local robuste
     try:
         mlflow.set_tracking_uri("http://127.0.0.1:5000")
         mlflow.set_experiment("Tourism_Prediction")
     except Exception as e:
+        print("Note: Serveur MLflow injoignable, enregistrement en local dans 'mlruns'.")
         mlflow.set_tracking_uri("")
         mlflow.set_experiment("Tourism_Prediction")
 
+    # Chargement des données d'entraînement et de test
     X_train = pd.read_csv("Xtrain.csv")
     X_test = pd.read_csv("Xtest.csv")
     y_train = pd.read_csv("ytrain.csv").values.ravel()
     y_test = pd.read_csv("ytest.csv").values.ravel()
 
+    # Identification des colonnes selon leur type
     num_cols = X_train.select_dtypes(include=["int64", "float64"]).columns.tolist()
     cat_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
 
+    # Prétraitement des données
     preprocessor = make_column_transformer(
         (StandardScaler(), num_cols),
         (OneHotEncoder(handle_unknown="ignore"), cat_cols)
     )
 
+    # Création du pipeline avec XGBoost
     classifier = xgb.XGBClassifier(random_state=42, eval_metric="logloss")
     pipeline = make_pipeline(preprocessor, classifier)
 
+    # Définition des hyperparamètres pour la recherche par grille
     param_grid = {
         "xgbclassifier__max_depth": [3, 5],
         "xgbclassifier__n_estimators": [50, 100],
         "xgbclassifier__learning_rate": [0.05, 0.1]
     }
 
+    print("Début de la recherche d'hyperparamètres (GridSearchCV)...")
     grid_search = GridSearchCV(pipeline, param_grid, cv=3, scoring="accuracy", n_jobs=-1)
 
     try:
@@ -48,6 +56,7 @@ def train_model():
             best_model = grid_search.best_estimator_
             best_params = grid_search.best_params_
 
+            # Évaluation sur le jeu de test
             y_pred = best_model.predict(X_test)
             accuracy = accuracy_score(y_test, y_pred)
             report = classification_report(y_test, y_pred)
@@ -56,23 +65,35 @@ def train_model():
             print(f"Précision (Accuracy) : {accuracy:.4f}")
             print("Rapport de classification :\n", report)
 
+            # Enregistrement dans MLflow
             for param, val in best_params.items():
                 mlflow.log_param(param, val)
             mlflow.log_metric("accuracy", accuracy)
 
+            # Génération de la signature et exemple d'entrée
             input_example = X_train.head(5)
             signature = infer_signature(X_train, best_model.predict(X_train))
-            mlflow.sklearn.log_model(sk_model=best_model, artifact_path="model", signature=signature, input_example=input_example)
 
+            mlflow.sklearn.log_model(
+                sk_model=best_model,
+                artifact_path="model",
+                signature=signature,
+                input_example=input_example
+            )
+
+            # Sauvegarde du modèle final pour le déploiement
             os.makedirs("tourism_project/deployment", exist_ok=True)
-            joblib.dump(best_model, "tourism_project/deployment/model.joblib")
-            print("✓ Modèle sauvegardé avec succès dans : tourism_project/deployment/model.joblib")
+            model_path = "tourism_project/deployment/model.joblib"
+            joblib.dump(best_model, model_path)
+            print(f"✓ Modèle sauvegardé avec succès dans : {model_path}")
     except Exception as run_error:
+        print(f"Note: Échec de l'expérience MLflow ({run_error}). Exécution et sauvegarde locales seules.")
         grid_search.fit(X_train, y_train)
         best_model = grid_search.best_estimator_
         os.makedirs("tourism_project/deployment", exist_ok=True)
-        joblib.dump(best_model, "tourism_project/deployment/model.joblib")
-        print("✓ Modèle sauvegardé avec succès localement (sans MLflow) : tourism_project/deployment/model.joblib")
+        model_path = "tourism_project/deployment/model.joblib"
+        joblib.dump(best_model, model_path)
+        print(f"✓ Modèle sauvegardé avec succès localement : {model_path}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     train_model()
