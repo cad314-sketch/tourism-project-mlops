@@ -3,9 +3,8 @@ name: Tourism Project Pipeline
 on:
   push:
     branches:
-      - main  # S'active automatiquement à chaque push sur la branche main
-  workflow_dispatch:  # Permet de lancer manuellement le workflow dans GitHub
-
+      - main  # Activates automatically with each push on the main branch
+  workflow_dispatch:  # Allows you to manually launch the workflow in GitHub
 permissions:
   contents: write
 
