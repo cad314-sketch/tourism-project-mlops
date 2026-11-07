@@ -3,10 +3,10 @@ import pandas as pd
 import joblib
 import os
 
-st.set_page_config(page_title="Prédiction Forfait Bien-être", layout="centered")
+st.set_page_config(page_title="Wellness Package Prediction, layout="centered")
 
-st.title("✈️ Prédiction d'Achat du Forfait de Tourisme de Bien-être")
-st.write("Cette application prédit si un client est susceptible d'acheter le nouveau forfait de tourisme de bien-être.")
+st.title("✈️ Wellness Tourism Package Purchase Prediction")
+st.write("This application predicts whether a customer is likely to purchase the new wellness tourism package.")
 
 # Path to the saved model
 model_path = "tourism_project/deployment/model.joblib"
@@ -20,38 +20,38 @@ def load_model():
 model = load_model()
 
 if model is None:
-    st.error(f"Modèle introuvable à l'emplacement : {model_path}. Veuillez d'abord exécuter l'entraînement du modèle.")
+    st.error(f"Model not found at location : {model_path}. Please run the model training first.")
 else:
-    st.subheader("Informations du client")
+    st.subheader("Customer information")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        age = st.number_input("Âge", min_value=18, max_value=100, value=30)
-        city_tier = st.selectbox("Catégorie de Ville (CityTier)", [1, 2, 3])
+        age = st.number_input("Age", min_value=18, max_value=100, value=30)
+        city_tier = st.selectbox("City Category (CityTier)", [1, 2, 3])
         occupation = st.selectbox("Occupation", ["Salaried", "Small Business", "Large Business", "Freelancer"])
-        gender = st.selectbox("Genre", ["Male", "Female"])
-        marital_status = st.selectbox("État Civil", ["Single", "Married", "Divorced", "Unmarried"])
-        designation = st.selectbox("Désignation", ["Executive", "Manager", "Senior Manager", "AVP", "VP"])
-        monthly_income = st.number_input("Revenu Mensuel", min_value=0, value=20000)
+        gender = st.selectbox("Gender", ["Male", "Female"])
+        marital_status = st.selectbox("Marital status", ["Single", "Married", "Divorced", "Unmarried"])
+        designation = st.selectbox("Designation", ["Executive", "Manager", "Senior Manager", "AVP", "VP"])
+        monthly_income = st.number_input("Monthly Income", min_value=0, value=20000)
 
     with col2:
-        typeof_contact = st.selectbox("Type de Contact", ["Self Inquiry", "Company Invited"])
-        num_person = st.number_input("Nombre de personnes voyageant", min_value=1, max_value=10, value=2)
-        pref_stars = st.selectbox("Étoiles d'hôtel préférées", [3, 4, 5])
-        num_trips = st.number_input("Nombre de voyages par an", min_value=0, max_value=20, value=2)
-        passport = st.selectbox("Détient un Passeport ?", ["Non", "Oui"])
-        own_car = st.selectbox("Possède une Voiture ?", ["Non", "Oui"])
-        num_children = st.number_input("Nombre d'enfants de moins de 5 ans", min_value=0, max_value=5, value=0)
+        typeof_contact = st.selectbox("Type of Contact", ["Self Inquiry", "Company Invited"])
+        num_person = st.number_input("Number of people travelling", min_value=1, max_value=10, value=2)
+        pref_stars = st.selectbox("Favorite hotel stars", [3, 4, 5])
+        num_trips = st.number_input("Number of trips per year", min_value=0, max_value=20, value=2)
+        passport = st.selectbox("Does he have a passport?", ["No", "Yes"])
+        own_car = st.selectbox("Owns a Car?", ["No", "Yes"])
+        num_children = st.number_input("Number of children under 5 years old", min_value=0, max_value=5, value=0)
 
-    st.subheader("Données d'interaction client")
+    st.subheader("Customer interaction data")
     col3, col4 = st.columns(2)
     with col3:
-        pitch_satisfaction = st.slider("Score de satisfaction de la présentation", 1, 5, 3)
-        product_pitched = st.selectbox("Produit présenté", ["Basic", "Deluxe", "Standard", "Super Deluxe", "King"])
+        pitch_satisfaction = st.slider("Presentation satisfaction score", 1, 5, 3)
+        product_pitched = st.selectbox("Product presented", ["Basic", "Deluxe", "Standard", "Super Deluxe", "King"])
     with col4:
-        num_followups = st.number_input("Nombre de suivis", min_value=0, max_value=10, value=3)
-        duration_pitch = st.number_input("Durée de la présentation (minutes)", min_value=0, value=15)
+        num_followups = st.number_input("Number of follow-ups", min_value=0, max_value=10, value=3)
+        duration_pitch = st.number_input("Presentation duration (minutes)", min_value=0, value=15)
 
     # Prepare the input dictionary mapping exactly to expected dataset features
     input_data = {
@@ -77,7 +77,7 @@ else:
 
     input_df = pd.DataFrame(input_data)
 
-    if st.button("Prédire l'Achat"):
+    if st.button("Predicting the Purchase"):
         prediction = model.predict(input_df)[0]
         probability = model.predict_proba(input_df)[0][1]
 
