@@ -35,4 +35,3 @@ def prepare_data():
     y_test.to_csv("ytest.csv", index=False)
 
     print("Data preparation completed and splits saved successfully.")
-
