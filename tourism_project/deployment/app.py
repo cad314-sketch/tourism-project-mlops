@@ -67,7 +67,7 @@ else:
         "PreferredPropertyStar": [pref_stars],
         "MaritalStatus": [marital_status],
         "NumberOfTrips": [num_trips],
-        "Passport": [1 if passport == "Oui" else 0],
+        "Passport": [1 if passport == "Yes" else 0],
         "PitchSatisfactionScore": [pitch_satisfaction],
         "OwnCar": [1 if own_car == "Oui" else 0],
         "NumberOfChildrenVisiting": [num_children],
